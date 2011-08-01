@@ -9,15 +9,35 @@
 		<input type="button" value="Compute" id="compute"/>
 		
 		<h3>CRC32:&nbsp<div id="crc32"></div></h3>
-		<h3>Simhash:&nbsp<div id="shash"></div></h3>
+		<h3>Simhash (base 2) :&nbsp<div id="shash2"></div></h3>
+		<h3>Simhash (base 16):&nbsp<div id="shash16"></div></h3>
+
+        <p/>
+
+		<h1>Simhash Hamming Distance</h1>
+		First String: <input type="text" size="100" id="source1"><br/>
+		Second String: <input type="text" size="100" id="source2"><br/>
+		<input type="button" value="Compute Simhash Hamming Distance" id="hd"/>
+		<h3>Hamming Similarity:&nbsp<div id="distance"></div></h3>
+		<h3>Similarity:&nbsp<div id="similarity"></div></h3>
 
 		<script language="JavaScript">
-		$('#compute').click(function(){
+		$('#compute').click(function() {
 			var source = $('#source').val();
 			var crc = crc32(source).toString(16);
-			var sim = Simhash.of(source).toString(2);
 			$('#crc32').text(crc);
-			$('#shash').text(sim);
+			$('#shash2').text(Simhash.of(source).toString(2));
+			$('#shash16').text(Simhash.of(source).toString(16));
+		});
+
+		$('#hd').click(function() {
+			var source1 = $('#source1').val();
+			var source2 = $('#source2').val();
+
+			var simhash1 = Simhash.of(source1).toString(16);
+			var simhash2 = Simhash.of(source2).toString(16);
+            $('#distance').text(Simhash.hammingDistance(simhash1, simhash2));
+            $('#similarity').text(Simhash.similarity(simhash1, simhash2));
 		});
 		</script>			
 	</body>

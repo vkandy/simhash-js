@@ -1,5 +1,6 @@
 /**
- * CRC32 Calculation.
+ * CRC32 Calculation. 
+ * TODO: Find and add link to author's page.
  */
 var crc32 = (function() {
     function utf8encode(str) {
@@ -113,16 +114,47 @@ var Simhash = {
     tokenize: function(original) {
         var size = original.length;
         if(size <= this.kshingles) {
-            return original.substr(0);
+            return [original.substr(0)];
         }
 
         var shingles = [];
         for (var i = 0; i < size; i = i + 4) {
-            shingles.push(i + this.kshingles < size ? original.substr(i, i + this.kshingles) : original.substr(i));
+            shingles.push(i + this.kshingles < size ? original.slice(i, i + this.kshingles) : original.slice(i));
         }
-
-        alert(shingles.toString())
         return shingles;
+    },
+
+    /**
+     * Calculates bit-wise hamming distance of two integers in base 16.
+     */
+    hammingDistance: function(x, y) {
+        var distance = 0;
+        var val = parseInt(x, 16) ^ parseInt(y, 16);
+        while(val) {
+            ++distance;
+            val &= val - 1;
+        }
+        return distance;
+    },
+
+    /**
+     * Calculates bit-wise similarity - Jaccard index.
+     */
+    similarity: function(x, y) {
+        var x16 = parseInt(x, 16);
+        var y16 = parseInt(y, 16);
+        var i = (x16 & y16);
+        var u = (x16 | y16);
+        return this.countBitsSet(i) / this.countBitsSet(u);
+    },
+
+    /**
+     * Count bits set.
+     */
+    countBitsSet: function(l) {
+        var c;
+        for(c = 0; l; c++) l &= l-1;
+        return c;
     }
 };
 
