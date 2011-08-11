@@ -1,25 +1,50 @@
 <html>
 	<head>
 		<script src="jquery.min.js" type="text/javascript"></script>
-		<script src="../src/simhash.js" type="text/javascript"></script>			
+		<script src="../src/simhash.js" type="text/javascript"></script>
+        <style type="text/css">
+            body { margin: 20px; }
+            .area{ float: left; margin-right: 20px;}
+            .row {
+	            width: 960px;
+	            margin: 0 auto;
+	            overflow: hidden;
+            }
+        </style>
 	</head>
 	<body>
-		<h1>Simhash Test</h1>
-		Input String: <textarea type="text" size="100" id="source"></textarea>
-		<input type="button" value="Compute" id="compute"/>
-		
-		<h3>CRC32:&nbsp<div id="crc32"></div></h3>
-		<h3>Simhash (base 2) :&nbsp<div id="shash2"></div></h3>
-		<h3>Simhash (base 16):&nbsp<div id="shash16"></div></h3>
+        <section class="row">
+		    <h1>Simhash Test</h1>
+            <div class="area">
+		        <p>Input String:</p>
+                <textarea type="text" rows="5" cols="50" id="source"></textarea>
+            </div>
+            <div class="row">
+	        	<p><input type="button" value="Compute Simhash" id="compute"/></p>
+        	    <h3>CRC32:&nbsp<span id="crc32"></span></h3>
+		        <h3>Simhash (base 2) :&nbsp<span id="shash2"></span></h3>
+		        <h3>Simhash (base 16):&nbsp<span id="shash16"></span></h3>
+            </div>
+        </section>
 
-        <p/>
+        <section class="row">
+		    <h1>Test Similarity</h1>
+            <div class="area">
+		    <p>First String:</p>
+            <textarea type="text" rows="5" cols="50" id="source1"></textarea>
+            </div>
 
-		<h1>Simhash Hamming Distance</h1>
-		First String: <textarea type="text" size="100" id="source1"></textarea><br/>
-		Second String: <textarea type="text" size="100" id="source2"></textarea><br/>
-		<input type="button" value="Compute Simhash Hamming Distance" id="hd"/>
-		<h3>Hamming Similarity:&nbsp<div id="distance"></div></h3>
-		<h3>Similarity:&nbsp<div id="similarity"></div></h3>
+            <div class="area">
+		    <p>Second String:</p>
+            <textarea type="text" rows="5" cols="50" id="source2"></textarea>
+            </div>
+
+            <div class="row">
+		        <p><input type="button" value="Find Similarity" id="hd"/></p>
+		        <h3>Hamming Distance:&nbsp<span id="distance"></span></h3>
+		        <h3>Jaccard Index:&nbsp<span id="similarity"></span></h3>
+            </div>
+        </section>
 
 		<script language="JavaScript">
 		$('#compute').click(function() {
@@ -34,11 +59,11 @@
 			var source1 = $('#source1').val();
 			var source2 = $('#source2').val();
 
-			var simhash1 = Simhash.of(source1).toString(16);
-			var simhash2 = Simhash.of(source2).toString(16);
+			var simhash1 = Simhash.of(source1, {kshingles: 2}).toString(16);
+			var simhash2 = Simhash.of(source2, {kshingles: 2}).toString(16);
             $('#distance').text(Simhash.hammingDistance(simhash1, simhash2));
             $('#similarity').text(Simhash.similarity(simhash1, simhash2));
 		});
-		</script>			
+		</script>
 	</body>
 </html>

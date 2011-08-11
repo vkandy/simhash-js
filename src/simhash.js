@@ -59,7 +59,14 @@ var crc32 = (function() {
 /**
  * Simhash singleton class. Creates a 32-bit simhash.
  *
- * Usage: var hash = Simhash.of("This is a test");
+ * // Usage: 
+ * var hash = Simhash.of("This is a test");
+ *
+ * // Override default values
+ * var hash = Simhash.of("This is a test", {
+ *      kshingles: 2,
+ *      maxFeatures: 32    
+ * });
  */
 var Simhash = {
     /**
@@ -74,14 +81,26 @@ var Simhash = {
     maxFeatures: 128,
 
     /**
+     * TODO: Use a priority queue. Till then this comparator is 
+     * used to find the least 'maxFeatures' shingles.
+     */
+    hashComparator: function(a, b) {
+        return a < b ? -1 : (a > b ? 1 : 0);
+    },
+
+    /**
      * Driver function.
      */
-    of: function(input) {
-        var features = this.tokenize(input);
+    of: function(input, options) {
+        // parse options
+        this.kshingles = typeof(options['kshingles']) != 'undefined' ? options['kshingles'] : this.kshingles;
+        this.maxFeatures = typeof(options['maxFeatures']) != 'undefined' ? options['maxFeatures'] : this.maxFeatures;
+
+        var tokens = this.tokenize(input);
         var shingles = [];
-        $.each(features, function(index, feature) {
-            shingles.push(crc32(feature));
-        });
+        for(var i in tokens) {
+            shingles.push(crc32(tokens[i]));
+        }
         return this.combineShingles(shingles);
     },
 
@@ -94,13 +113,17 @@ var Simhash = {
 
         if(shingles.length == 1) return shingles[0];
 
+        shingles.sort(this.hashComparator);
+        if(shingles.length > this.maxFeatures) shingles = shingles.splice(this.maxFeatures);
+
         var simhash = 0x0;
         var mask = 0x1;
         for(var pos = 0; pos < 32; pos++) {
             var weight = 0;
-            $.each(shingles, function(index, shingle) {
+            for(var i in shingles) {
+                shingle = shingles[i];
                 weight += !(~shingle & mask) == 1 ? 1 : -1;
-            });
+            }
             if(weight > 0) simhash |= mask;
             mask <<= 1;
         }
@@ -118,16 +141,16 @@ var Simhash = {
         }
 
         var shingles = [];
-        for (var i = 0; i < size; i = i + 4) {
+        for (var i = 0; i < size; i = i + this.kshingles) {
             shingles.push(i + this.kshingles < size ? original.slice(i, i + this.kshingles) : original.slice(i));
         }
         return shingles;
     },
 
     /**
-     * Calculates bit-wise hamming distance of two integers in base 16.
+     * Calculates binary hamming distance of two base 16 integers.
      */
-    hammingDistance: function(x, y) {
+    hammingDistanceSlow: function(x, y) {
         var distance = 0;
         var val = parseInt(x, 16) ^ parseInt(y, 16);
         while(val) {
@@ -138,6 +161,25 @@ var Simhash = {
     },
 
     /**
+     * Calculates binary hamming distance of two base 16 integers.
+     */
+    hammingDistance: function(x, y) {
+        var a1 = parseInt(x, 16);
+        var a2 = parseInt(y, 16);
+	    var v1 = a1^a2;
+	    var v2 = (a1^a2)>>32;
+
+	    v1 = v1 - ((v1>>1) & 0x55555555);
+	    v2 = v2 - ((v2>>1) & 0x55555555);
+	    v1 = (v1 & 0x33333333) + ((v1>>2) & 0x33333333);
+	    v2 = (v2 & 0x33333333) + ((v2>>2) & 0x33333333);
+	    var c1 = ((v1 + (v1>>4) & 0xF0F0F0F) * 0x1010101) >> 24;
+	    var c2 = ((v2 + (v2>>4) & 0xF0F0F0F) * 0x1010101) >> 24;
+
+	    return c1 + c2;
+    },
+
+    /**
      * Calculates bit-wise similarity - Jaccard index.
      */
     similarity: function(x, y) {
@@ -145,13 +187,13 @@ var Simhash = {
         var y16 = parseInt(y, 16);
         var i = (x16 & y16);
         var u = (x16 | y16);
-        return this.countBitsSet(i) / this.countBitsSet(u);
+        return this.hammingWeight(i) / this.hammingWeight(u);
     },
 
     /**
-     * Count bits set.
+     * Calculates Hamming weight (population count).
      */
-    countBitsSet: function(l) {
+    hammingWeight: function(l) {
         var c;
         for(c = 0; l; c++) l &= l-1;
         return c;
