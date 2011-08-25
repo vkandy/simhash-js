@@ -93,15 +93,18 @@ var Simhash = {
      */
     of: function(input, options) {
         // parse options
-        this.kshingles = typeof(options['kshingles']) != 'undefined' ? options['kshingles'] : this.kshingles;
-        this.maxFeatures = typeof(options['maxFeatures']) != 'undefined' ? options['maxFeatures'] : this.maxFeatures;
+        this.kshingles = typeof(options) != 'undefined' && typeof(options['kshingles']) != 'undefined' ? options['kshingles'] : this.kshingles;
+        this.maxFeatures = typeof(options) != 'undefined' && typeof(options['maxFeatures']) != 'undefined' ? options['maxFeatures'] : this.maxFeatures;
 
         var tokens = this.tokenize(input);
         var shingles = [];
         for(var i in tokens) {
             shingles.push(crc32(tokens[i]));
         }
-        return this.combineShingles(shingles);
+
+        var simhash = this.combineShingles(shingles);
+        simhash >>>= 0;
+        return simhash;
     },
 
     /**
