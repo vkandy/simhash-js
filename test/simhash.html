@@ -21,7 +21,7 @@
             </div>
             <div class="row">
 	        	<p><input type="button" value="Compute Simhash" id="compute"/></p>
-        	    <h3>CRC32:&nbsp<span id="crc32"></span></h3>
+        	    <h3>Jenkins 32-bit hash:&nbsp<span id="jenkins32"></span></h3>
 		        <h3>Simhash (base 2) :&nbsp<span id="shash2"></span></h3>
 		        <h3>Simhash (base 16):&nbsp<span id="shash16"></span></h3>
             </div>
@@ -49,18 +49,21 @@
 		<script language="JavaScript">
 		$('#compute').click(function() {
 			var source = $('#source').val();
-			var crc = crc32(source).toString(16);
-			$('#crc32').text(crc);
-			$('#shash2').text(Simhash.of(source).toString(2));
-			$('#shash16').text(Simhash.of(source).toString(16));
+            var jenkins = new Jenkins();
+			var jhash = jenkins.hash32(source).toString(16);
+            var simhash = new Simhash();
+			$('#jenkins32').text(jhash);
+			$('#shash2').text(simhash.of(source).toString(2));
+			$('#shash16').text(simhash.of(source).toString(16));
 		});
 
 		$('#hd').click(function() {
 			var source1 = $('#source1').val();
 			var source2 = $('#source2').val();
 
-			var simhash1 = Simhash.of(source1, {kshingles: 2}).toString(16);
-			var simhash2 = Simhash.of(source2, {kshingles: 2}).toString(16);
+            var simhash = new Simhash();
+			var simhash1 = simhash.of(source1, {kshingles: 2, maxFeatures: 128}).toString(16);
+			var simhash2 = simhash.of(source2, {kshingles: 2, maxFeatures: 128}).toString(16);
             $('#distance').text(Simhash.hammingDistance(simhash1, simhash2));
             $('#similarity').text(Simhash.similarity(simhash1, simhash2));
 		});
