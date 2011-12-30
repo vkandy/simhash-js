@@ -2,7 +2,6 @@
 
 A Javascript implementation of Charikar's hash for identification of similar documents. 
 
-**NOTE:** Not production ready yet. Haven't tested much.
 
 ## What is Simhash?
 Consider two documents A and B that differ in just a single byte. 
@@ -23,7 +22,6 @@ By contrast, Simhash will hash contents of A and B to similar hash values. The H
     });
 
 # To Do
-* Implement 64 bit hash
 * Implement an efficient priority queue
 * Accept a list of stop words to be removed from input prior to calculating hash
 
