@@ -63,7 +63,7 @@ var Simhash = function(options) {
         for(var pos = 0; pos < 32; pos++) {
             var weight = 0;
             for(var i in shingles) {
-                shingle = shingles[i];
+                shingle = parseInt(shingles[i],16);
                 weight += !(~shingle & mask) == 1 ? 1 : -1;
             }
             if(weight > 0) simhash |= mask;
