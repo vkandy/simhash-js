@@ -64,8 +64,8 @@
             var simhash = new Simhash();
 			var simhash1 = simhash.of(source1, {kshingles: 2, maxFeatures: 128}).toString(16);
 			var simhash2 = simhash.of(source2, {kshingles: 2, maxFeatures: 128}).toString(16);
-            $('#distance').text(Simhash.hammingDistance(simhash1, simhash2));
-            $('#similarity').text(Simhash.similarity(simhash1, simhash2));
+            $('#distance').text(hammingDistance(simhash1, simhash2));
+            $('#similarity').text(similarity(simhash1, simhash2));
 		});
 		</script>
 	</body>

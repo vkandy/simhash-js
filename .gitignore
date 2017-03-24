@@ -1,3 +1,7 @@
 *.class
 *.pyc
 *.pyo
+.idea/modules.xml
+.idea/simhash.iml
+.idea/vcs.xml
+.idea/workspace.xml

@@ -103,45 +103,6 @@ var Simhash = function(options) {
     };
 
     /**
-     * Calculates binary hamming distance of two base 16 integers.
-     */
-    var hammingDistance = function(x, y) {
-        var a1 = parseInt(x, 16);
-        var a2 = parseInt(y, 16);
-	    var v1 = a1^a2;
-	    var v2 = (a1^a2)>>32;
-
-	    v1 = v1 - ((v1>>1) & 0x55555555);
-	    v2 = v2 - ((v2>>1) & 0x55555555);
-	    v1 = (v1 & 0x33333333) + ((v1>>2) & 0x33333333);
-	    v2 = (v2 & 0x33333333) + ((v2>>2) & 0x33333333);
-	    var c1 = ((v1 + (v1>>4) & 0xF0F0F0F) * 0x1010101) >> 24;
-	    var c2 = ((v2 + (v2>>4) & 0xF0F0F0F) * 0x1010101) >> 24;
-
-	    return c1 + c2;
-    };
-
-    /**
-     * Calculates bit-wise similarity - Jaccard index.
-     */
-    var similarity = function(x, y) {
-        var x16 = parseInt(x, 16);
-        var y16 = parseInt(y, 16);
-        var i = (x16 & y16);
-        var u = (x16 | y16);
-        return hammingWeight(i) / hammingWeight(u);
-    };
-
-    /**
-     * Calculates Hamming weight (population count).
-     */
-    var hammingWeight = function(l) {
-        var c;
-        for(c = 0; l; c++) l &= l-1;
-        return c;
-    };
-
-    /**
      * TODO: Use a priority queue. Till then this comparator is 
      * used to find the least 'maxFeatures' shingles.
      */
@@ -202,20 +163,20 @@ var Jenkins = function() {
 
         var offset = 0;
         while (length > 12) {
-            a += k[offset + 0];
-            a += k[offset + 1] << 8;
-            a += k[offset + 2] << 16;
-            a += k[offset + 3] << 24;
+            a += k.charCodeAt(offset + 0);
+            a += k.charCodeAt(offset + 1) << 8;
+            a += k.charCodeAt(offset + 2) << 16;
+            a += k.charCodeAt(offset + 3) << 24;
 
-            b += k[offset + 4];
-            b += k[offset + 5] << 8;
-            b += k[offset + 6] << 16;
-            b += k[offset + 7] << 24;
+            b += k.charCodeAt(offset + 4);
+            b += k.charCodeAt(offset + 5) << 8;
+            b += k.charCodeAt(offset + 6) << 16;
+            b += k.charCodeAt(offset + 7) << 24;
 
-            c += k[offset + 8];
-            c += k[offset + 9] << 8;
-            c += k[offset + 10] << 16;
-            c += k[offset + 11] << 24;
+            c += k.charCodeAt(offset + 8);
+            c += k.charCodeAt(offset + 9) << 8;
+            c += k.charCodeAt(offset + 10) << 16;
+            c += k.charCodeAt(offset + 11) << 24;
 
             mixed = mix(a, b, c);
             a = mixed.a;
@@ -227,20 +188,20 @@ var Jenkins = function() {
         }
 
         switch (length) {
-            case 12: c += k[offset + 11] << 24;
-            case 11: c += k[offset + 10] << 16;
-            case 10: c += k[offset + 9] << 8;
-            case 9: c += k[offset + 8];
+            case 12: c += k.charCodeAt(offset + 11) << 24;
+            case 11: c += k.charCodeAt(offset + 10) << 16;
+            case 10: c += k.charCodeAt(offset + 9) << 8;
+            case 9: c +=  k.charCodeAt(offset + 8);
 
-            case 8: b += k[offset + 7] << 24;
-            case 7: b += k[offset + 6] << 16;
-            case 6: b += k[offset + 5] << 8;
-            case 5: b += k[offset + 4];
+            case 8: b += k.charCodeAt(offset + 7) << 24;
+            case 7: b += k.charCodeAt(offset + 6) << 16;
+            case 6: b += k.charCodeAt(offset + 5) << 8;
+            case 5: b += k.charCodeAt(offset + 4);
 
-            case 4: a += k[offset + 3] << 24;
-            case 3: a += k[offset + 2] << 16;
-            case 2: a += k[offset + 1] << 8;
-            case 1: a += k[offset + 0]; break;
+            case 4: a += k.charCodeAt(offset + 3) << 24;
+            case 3: a += k.charCodeAt(offset + 2) << 16;
+            case 2: a += k.charCodeAt(offset + 1) << 8;
+            case 1: a += k.charCodeAt(offset + 0); break;
 
             case 0: return {c: c >>> 0, b: b >>> 0};
         }
@@ -287,5 +248,44 @@ var Jenkins = function() {
     var rot = function(x, k) {
         return (((x) << (k)) | ((x) >> (32-(k))));
     };
+};
+
+/**
+ * Calculates binary hamming distance of two base 16 integers.
+ */
+var hammingDistance = function(x, y) {
+    var a1 = parseInt(x, 16);
+    var a2 = parseInt(y, 16);
+    var v1 = a1^a2;
+    var v2 = (a1^a2)>>32;
+
+    v1 = v1 - ((v1>>1) & 0x55555555);
+    v2 = v2 - ((v2>>1) & 0x55555555);
+    v1 = (v1 & 0x33333333) + ((v1>>2) & 0x33333333);
+    v2 = (v2 & 0x33333333) + ((v2>>2) & 0x33333333);
+    var c1 = ((v1 + (v1>>4) & 0xF0F0F0F) * 0x1010101) >> 24;
+    var c2 = ((v2 + (v2>>4) & 0xF0F0F0F) * 0x1010101) >> 24;
+
+    return c1 + c2;
+};
+
+/**
+ * Calculates bit-wise similarity - Jaccard index.
+ */
+var similarity = function(x, y) {
+    var x16 = parseInt(x, 16);
+    var y16 = parseInt(y, 16);
+    var i = (x16 & y16);
+    var u = (x16 | y16);
+    return hammingWeight(i) / hammingWeight(u);
+};
+
+/**
+ * Calculates Hamming weight (population count).
+ */
+var hammingWeight = function(l) {
+    var c;
+    for(c = 0; l; c++) l &= l-1;
+    return c;
 };
 
