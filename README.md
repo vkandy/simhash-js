@@ -11,13 +11,12 @@ Hash functions such as SHA-2 or MD5 will hash contents of these two documents in
 By contrast, Simhash will hash contents of A and B to similar hash values. The Hamming distance between simhash(A) and simhash(B) would be small.
 
 # Usage
-    var simhash_js = require('simhash_js');
-    var SimHash = simhash_js.SimHash;
-    var simhash = new SimHash();
+    var sjs = require('simhash-js');
+    var simhash = new sjs.SimHash();
     var x = simhash.hash("This is a test of the Emergency Blogcast System");
     var y = simhash.hash("This is a second test of the Emergency Blogcast System");
 
-    var s = simhash_js.Comparator.similarity(x, y); //should return 0.3 
+    var s = sjs.Comparator.similarity(x, y); 
 
 # To Do
 * Implement an efficient priority queue
@@ -28,3 +27,8 @@ By contrast, Simhash will hash contents of A and B to similar hash values. The H
 * Charikar: Similarity Estimation Techniques from Rounding Algorithms, in Proceedings of the thiry-fourth annual ACM symposium on Theory of computing, ACM Press, 2002
 * Manku, Jain, Sarma: Detecting Near-Duplicates for Web Crawling. in Proceedings of the 16th international conference on World Wide Web, ACM Press, 2007
 
+# Contributors
+
+Sincere thanks to:
+* [Xavier Blanc](https://github.com/xblanc33)
+* [dverstee](https://github.com/dverstee)
