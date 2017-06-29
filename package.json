@@ -1,0 +1,25 @@
+{
+  "name": "simhash-js",
+  "version": "1.0.0",
+  "description": "A Javascript implementation of Charikar's hash for identification of similar documents.",
+  "main": "index.js",
+  "directories": {
+    "test": "test"
+  },
+  "scripts": {
+    "test": "mocha"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/xblanc33/simhash-js.git"
+  },
+  "author": "Vijay Kandy, Xavier Blanc",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/xblanc33/simhash-js/issues"
+  },
+  "homepage": "https://github.com/xblanc33/simhash-js#readme",
+  "devDependencies": {
+    "mocha": "^3.4.2"
+  }
+}
